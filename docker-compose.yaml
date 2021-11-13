@@ -1,0 +1,31 @@
+version: "3"
+services:
+  node:
+    image: node:14.17.5-alpine3.14
+    container_name: firebase-admin-emu-docker-compose-node
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/workspace/service-account.json
+      - FIREBASE_STORAGE_EMULATOR_HOST=firebase:9199
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+    working_dir: /workspace
+    ports:
+      - 3000:3000
+    tty: true
+    restart: always
+    command: npm start
+  firebase:
+    image: andreysenov/firebase-tools:9.21.0-node-lts-alpine
+    container_name: firebase-admin-emu-docker-compose-firebase
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+    working_dir: /workspace
+    ports:
+      - 4000:4000
+      - 9199:9199
+    restart: always
+    command: firebase emulators:start  --import=./firebase-export --export-on-exit
